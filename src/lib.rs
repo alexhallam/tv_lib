@@ -4,7 +4,9 @@ pub mod print {
     use crossterm::terminal::size;
     use csv::Reader;
     use csv::StringRecord;
+    use csv::Writer;
     use owo_colors::OwoColorize;
+    use std::fs::File;
 
     pub fn print_from_csv_str(data: &str) {
         // rename: print_csv_from_str
@@ -1280,6 +1282,36 @@ pub mod print {
                 )),
             }
         }
+    }
+
+    pub fn read_csv(in_file_path: &str) -> Vec<Vec<String>> {
+        // csv::ReaderBuilder
+        let mut r: Reader<File> = csv::ReaderBuilder::new()
+            .has_headers(false)
+            .delimiter(b',')
+            .from_path(in_file_path)
+            .unwrap();
+
+        // Collect items in reader
+        let rdr = r
+            .records()
+            .into_iter()
+            .map(|x| x.expect("a csv record"))
+            .collect::<Vec<_>>();
+
+        // convert items to wtr
+        let rows: usize = rdr.len();
+        let mut wtr = Writer::from_writer(vec![]);
+        for row in 0..rows {
+            wtr.write_record(&rdr[row]).unwrap();
+        }
+
+        // convert wtr to string
+        let data = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
+
+        // use tv_lib: print_from_csv_str
+        let vec_vec_str = format_from_csv_str(data.as_str());
+        vec_vec_str
     }
 }
 

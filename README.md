@@ -5,40 +5,12 @@
 # tv lib example
 
 ```rust
-use csv::Reader;
-use csv::Writer;
-use std::fs::File;
-
 fn main() {
+    // define path
     let in_file_path: &str = "examples/data/uspop.csv";
-
-    // csv::ReaderBuilder
-    let mut r: Reader<File> = csv::ReaderBuilder::new()
-        .has_headers(false)
-        .delimiter(b',')
-        .from_path(in_file_path)
-        .unwrap();
-
-    // Collect items in reader
-    let rdr = r
-        .records()
-        .into_iter()
-        .map(|x| x.expect("a csv record"))
-        .collect::<Vec<_>>();
-
-    // convert items to wtr
-    let rows: usize = rdr.len();
-    let mut wtr = Writer::from_writer(vec![]);
-    for row in 0..rows {
-        wtr.write_record(&rdr[row]).unwrap();
-    }
-
-    // convert wtr to string
-    let data = String::from_utf8(wtr.into_inner().unwrap()).unwrap();
-
-    // use tv_lib: print_from_csv_str
-    let vec_vec_str = tv_lib::print::format_from_csv_str(data.as_str());
-
+    // one liner
+    let vec_vec_str = tv_lib::print::read_csv(in_file_path);
+    //print
     println!("{:?}", vec_vec_str[2][0..6].to_vec());
     println!("{:?}", vec_vec_str[3][0..6].to_vec());
 }
@@ -71,6 +43,7 @@ Examples may be run with `cargo run --example <file in examples dir>`
 The following are available
 
 ```shell
+cargo run --example short_read_csv
 cargo run --example print_csv_from_str
 cargo run --example format_csv_from_str
 cargo run --example read_then_format_csv_from_str
@@ -82,6 +55,17 @@ cargo run --example read_then_print_csv_from_str
 Some times it is too hard to want to go into a directory to copy and paste a chunk of code 😉.
 
 ## Format from strings
+
+```rust
+fn main() {
+    // define path
+    let in_file_path: &str = "examples/data/uspop.csv";
+    // one liner
+    let vec_vec_str = tv_lib::print::read_csv(in_file_path);
+    //print
+    println!("{:?}", vec_vec_str);
+}
+```
 
 ```rust
 // format_from_csv_str
